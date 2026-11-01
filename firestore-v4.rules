@@ -1,0 +1,300 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /stats/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.resource.data.keys().hasOnly(['installs','opensTotal','day','opensToday','msgsTotal','msgsToday']);
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['installs','opensTotal','day','opensToday','msgsTotal','msgsToday'])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['installs']) || request.resource.data.installs >= resource.data.get('installs', 0))
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['opensTotal']) || request.resource.data.opensTotal >= resource.data.get('opensTotal', 0))
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['msgsTotal']) || request.resource.data.msgsTotal >= resource.data.get('msgsTotal', 0));
+      allow delete: if false;
+    }
+    match /devices/{id} {
+      allow read: if request.auth != null && request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2';
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['os','br','cls','lang','inst','uid','model','n','first','last','ip'])
+        && (!request.resource.data.keys().hasAny(['ip']) || (request.resource.data.ip is string && request.resource.data.ip.size() < 46))
+        && request.resource.data.os is string && request.resource.data.os.size() < 20
+        && request.resource.data.br is string && request.resource.data.br.size() < 20
+        && request.resource.data.cls is string && request.resource.data.cls.size() < 20
+        && request.resource.data.lang is string && request.resource.data.lang.size() < 12
+        && request.resource.data.inst is bool
+        && request.resource.data.first == request.time
+        && request.resource.data.last == request.time;
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.first == resource.data.first
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['os','br','cls','lang','inst','last','model','n','ip'])
+        && (!request.resource.data.keys().hasAny(['ip']) || (request.resource.data.ip is string && request.resource.data.ip.size() < 46))
+        && request.resource.data.last == request.time;
+      allow delete: if false;
+    }
+    match /rooms/{code} {
+      function _rcb() { return get(/databases/$(database)/documents/rooms/$(code)).data.cb }
+      function _adm(u) { return get(/databases/$(database)/documents/rooms/$(code)/members/$(u)).data.a == true }
+      function _own() { return request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2' }
+      allow read: if true;
+      allow create: if request.auth != null
+        && code.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.keys().hasOnly(['name','createdAt','lastMsgAt','cb'])
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.cb == request.auth.uid;
+      allow update: if request.auth != null && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMsgAt'])
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pin'])
+          && (request.auth.uid == _rcb() || _adm(request.auth.uid) || _own())
+          && (!request.resource.data.keys().hasAny(['pin']) || (
+            request.resource.data.pin is map
+            && request.resource.data.pin.keys().hasOnly(['id','x','n'])
+            && request.resource.data.pin.id is string && request.resource.data.pin.id.size() <= 30
+            && request.resource.data.pin.x is string && request.resource.data.pin.x.size() <= 120
+            && request.resource.data.pin.n is string && request.resource.data.pin.n.size() <= 40)))
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name','lastMsgAt'])
+          && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60
+          && (exists(/databases/$(database)/documents/rooms/$(code)/members/$(request.auth.uid)) || _own())
+          && request.resource.data.cb == resource.data.cb
+          && request.resource.data.createdAt == resource.data.createdAt));
+      allow delete: if request.auth != null && (request.auth.uid == resource.data.cb || _own());
+      match /messages/{mid} {
+        allow read: if true;
+        allow create: if request.auth != null
+          && !exists(/databases/$(database)/documents/bans/$(request.auth.uid))
+          && request.resource.data.keys().hasOnly(['n','d','k','x','ts','r','qn','qi','q','dur','c','fw'])
+          && (!request.resource.data.keys().hasAny(['c']) || (request.resource.data.c is string && request.resource.data.c.size() <= 200))
+          && (!request.resource.data.keys().hasAny(['fw']) || request.resource.data.fw is bool)
+          && (!request.resource.data.keys().hasAny(['q']) || (request.resource.data.q is string && request.resource.data.q.size() <= 120))
+          && (!request.resource.data.keys().hasAny(['qn']) || (request.resource.data.qn is string && request.resource.data.qn.size() <= 40))
+          && (!request.resource.data.keys().hasAny(['qi']) || (request.resource.data.qi is string && request.resource.data.qi.size() <= 30))
+          && (!request.resource.data.keys().hasAny(['dur']) || (request.resource.data.dur is number && request.resource.data.dur <= 300))
+          && request.resource.data.n is string && request.resource.data.n.size() <= 40
+          && request.resource.data.d == request.auth.uid
+          && request.resource.data.k in ['t','w','s','a','i','v']
+          && request.resource.data.x is string
+          && ((request.resource.data.k in ['i','v'] && request.resource.data.x.size() <= 950000) || (!(request.resource.data.k in ['i','v']) && request.resource.data.x.size() <= 600))
+          && request.resource.data.r == 0
+          && request.resource.data.ts == request.time;
+        allow update: if request.auth != null && (
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['r'])
+            && request.resource.data.r >= resource.data.r)
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx'])
+            && request.resource.data.rx is map && request.resource.data.rx.size() <= 300
+            && request.resource.data.rx.values().hasOnly(['❤','👍'])
+            && (exists(/databases/$(database)/documents/rooms/$(code)/members/$(request.auth.uid)) || _own()))
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['x','e'])
+            && request.auth.uid == resource.data.d
+            && request.resource.data.x is string && request.resource.data.x.size() > 0 && request.resource.data.x.size() <= 600
+            && request.resource.data.e == true
+            && resource.data.k == 't' && request.resource.data.k == resource.data.k
+            && request.resource.data.d == resource.data.d
+            && request.resource.data.n == resource.data.n
+            && request.resource.data.r == resource.data.r
+            && request.resource.data.ts == resource.data.ts));
+        allow delete: if request.auth != null && (request.auth.uid == resource.data.d || request.auth.uid == _rcb() || _adm(request.auth.uid) || _own());
+      }
+      match /members/{mid} {
+        allow read: if true;
+        allow create: if request.auth != null
+          && request.resource.data.keys().hasOnly(['n','t'])
+          && request.resource.data.n is string && request.resource.data.n.size() <= 40
+          && request.resource.data.t == request.time
+          && (mid == request.auth.uid || request.auth.uid == _rcb() || _adm(request.auth.uid) || _own());
+        allow update: if request.auth != null && (
+          (mid == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['n','lr'])
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['n']) || (request.resource.data.n is string && request.resource.data.n.size() <= 40))
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['lr']) || request.resource.data.lr == request.time))
+          || ((request.auth.uid == _rcb() || _own())
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['a'])
+            && request.resource.data.a is bool));
+        allow delete: if request.auth != null && (mid == request.auth.uid || request.auth.uid == _rcb() || _own()
+          || (_adm(request.auth.uid) && resource.data.a != true && mid != _rcb()));
+      }
+      match /typing/{id} {
+        allow read: if true;
+        allow create, update: if request.auth != null
+          && id == request.auth.uid
+          && request.resource.data.keys().hasOnly(['n','ts'])
+          && request.resource.data.n is string && request.resource.data.n.size() <= 40
+          && request.resource.data.ts == request.time;
+        allow delete: if request.auth != null && id == request.auth.uid;
+      }
+      match /online/{id} {
+        allow read: if true;
+        allow create, update: if request.auth != null
+          && id == request.auth.uid
+          && request.resource.data.keys().hasOnly(['n','ts'])
+          && request.resource.data.n is string && request.resource.data.n.size() <= 40
+          && request.resource.data.ts == request.time;
+        allow delete: if true;
+      }
+    }
+    match /bans/{id} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2'
+        && request.resource.data.keys().hasOnly(['n','t'])
+        && request.resource.data.n is string && request.resource.data.n.size() <= 40
+        && request.resource.data.t == request.time;
+      allow update, delete: if request.auth != null && request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2';
+    }
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2' && (
+        (id == 'app'
+          && request.resource.data.keys().hasOnly(['banner','minVer'])
+          && (!request.resource.data.keys().hasAny(['banner']) || (request.resource.data.banner is string && request.resource.data.banner.size() <= 300))
+          && (!request.resource.data.keys().hasAny(['minVer']) || request.resource.data.minVer is number))
+        || (id == 'owner'
+          && request.resource.data.keys().hasOnly(['h'])
+          && request.resource.data.h is string && request.resource.data.h.size() == 64));
+    }
+    match /presence/{id} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['uid','ts'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.ts == request.time;
+      allow delete: if true;
+    }
+    match /upresence/{uid} {
+      allow get: if request.auth != null && (request.auth.uid == uid
+        || resource.data.hide != true);
+      allow list: if false;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['t','hide'])
+        && request.resource.data.t == request.time
+        && request.resource.data.hide is bool;
+      allow delete: if false;
+    }
+    match /usernames/{name} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+    match /users/{uid} {
+      allow get: if request.auth != null && (request.auth.uid == uid || request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2');
+      allow list: if request.auth != null && request.auth.uid == 'fhro8uevKvVI15RhOfYK2DPVz4o2';
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['username','dir','createdAt','email'])
+        && request.resource.data.username is string && request.resource.data.username.size() <= 30
+        && request.resource.data.dir is bool;
+      allow update: if request.auth != null && (
+        (request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dir','email','myRooms'])
+          && request.resource.data.username == resource.data.username)
+        ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['myRooms'])
+          && request.resource.data.username == resource.data.username
+          && (!resource.data.keys().hasAny(['myRooms']) || request.resource.data.myRooms.size() >= resource.data.myRooms.size())
+          && request.resource.data.myRooms is list
+          && request.resource.data.myRooms.size() <= 20));
+
+      allow delete: if false;
+    }
+    match /invites/{code} {
+      // 10-char codes from 32-char alphabet (~1.1e15 space), 24h expiry, single-use: anti-enumeration
+      allow get: if request.auth != null
+        && (!exists(/databases/$(database)/documents/invites/$(code))
+          || (resource.data.t > request.time - duration.value(1, 'd')
+            && resource.data.used == false));
+      allow list: if false;
+      allow create: if request.auth != null
+        && code.matches('^[A-HJ-NP-Z2-9]{10}$')
+        && request.resource.data.keys().hasOnly(['uid','n','t','used'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.n is string && request.resource.data.n.size() <= 30
+        && request.resource.data.t == request.time
+        && request.resource.data.used == false;
+      // accepting flips used once, before expiry, never by the inviter
+      allow update: if request.auth != null
+        && resource.data.t > request.time - duration.value(1, 'd')
+        && resource.data.used == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used'])
+        && request.resource.data.used == true
+        && request.auth.uid != resource.data.uid;
+      allow delete: if request.auth != null && (resource.data.uid == request.auth.uid || resource.data.used == true);
+    }
+    match /dms/{pid} {
+      allow get: if request.auth != null && (resource == null || request.auth.uid in resource.data.members);
+      allow list: if request.auth != null && request.auth.uid in resource.data.members;
+      // dm id == invite code: one dm per code, admission is atomic (create fails if doc exists)
+      allow create: if request.auth != null
+        && pid.matches('^[A-HJ-NP-Z2-9]{10}$')
+        && exists(/databases/$(database)/documents/invites/$(pid))
+        && get(/databases/$(database)/documents/invites/$(pid)).data.used == false
+        && get(/databases/$(database)/documents/invites/$(pid)).data.t > request.time - duration.value(1, 'd')
+        && get(/databases/$(database)/documents/invites/$(pid)).data.uid in request.resource.data.members
+        && request.resource.data.keys().hasOnly(['members','names','createdAt','lastMsgAt'])
+        && request.resource.data.members is list && request.resource.data.members.size() == 2
+        && request.auth.uid in request.resource.data.members
+        && request.auth.uid != get(/databases/$(database)/documents/invites/$(pid)).data.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.lastMsgAt == request.time;
+      allow update: if request.auth != null && request.auth.uid in resource.data.members
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMsgAt','names','lastMsgBy'])
+        && request.resource.data.members == resource.data.members;
+      allow delete: if false;
+      match /typing/{id} {
+        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members;
+        allow create, update: if request.auth != null
+          && id == request.auth.uid
+          && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members
+          && request.resource.data.keys().hasOnly(['n','ts'])
+          && request.resource.data.ts == request.time;
+        allow delete: if request.auth != null && id == request.auth.uid;
+      }
+      match /reads/{id} {
+        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members;
+        allow create, update: if request.auth != null
+          && id == request.auth.uid
+          && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members
+          && request.resource.data.keys().hasOnly(['lr'])
+          && request.resource.data.lr == request.time;
+        allow delete: if false;
+      }
+      match /messages/{mid} {
+        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members;
+        allow create: if request.auth != null
+          && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members
+          && !exists(/databases/$(database)/documents/bans/$(request.auth.uid))
+          && request.resource.data.keys().hasOnly(['n','d','k','x','ts','r','qn','qi','q','dur','c','fw'])
+          && (!request.resource.data.keys().hasAny(['c']) || (request.resource.data.c is string && request.resource.data.c.size() <= 200))
+          && (!request.resource.data.keys().hasAny(['fw']) || request.resource.data.fw is bool)
+          && (!request.resource.data.keys().hasAny(['q']) || (request.resource.data.q is string && request.resource.data.q.size() <= 120))
+          && (!request.resource.data.keys().hasAny(['qn']) || (request.resource.data.qn is string && request.resource.data.qn.size() <= 40))
+          && (!request.resource.data.keys().hasAny(['qi']) || (request.resource.data.qi is string && request.resource.data.qi.size() <= 30))
+          && (!request.resource.data.keys().hasAny(['dur']) || (request.resource.data.dur is number && request.resource.data.dur <= 300))
+          && request.resource.data.n is string && request.resource.data.n.size() <= 40
+          && request.resource.data.d == request.auth.uid
+          && request.resource.data.k in ['t','w','s','a','inv','i','v']
+          && request.resource.data.x is string
+          && ((request.resource.data.k in ['i','v'] && request.resource.data.x.size() <= 950000) || (!(request.resource.data.k in ['i','v']) && request.resource.data.x.size() <= 600))
+          && request.resource.data.r == 0
+          && request.resource.data.ts == request.time;
+        allow update: if request.auth != null && (
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['r'])
+            && request.resource.data.r >= resource.data.r)
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx'])
+            && request.resource.data.rx is map && request.resource.data.rx.size() <= 300
+            && request.resource.data.rx.values().hasOnly(['❤','👍'])
+            && request.auth.uid in get(/databases/$(database)/documents/dms/$(pid)).data.members)
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['x','e'])
+            && request.auth.uid == resource.data.d
+            && request.resource.data.x is string && request.resource.data.x.size() > 0 && request.resource.data.x.size() <= 600
+            && request.resource.data.e == true
+            && resource.data.k == 't' && request.resource.data.k == resource.data.k
+            && request.resource.data.d == resource.data.d
+            && request.resource.data.n == resource.data.n
+            && request.resource.data.r == resource.data.r
+            && request.resource.data.ts == resource.data.ts));
+        allow delete: if request.auth != null && request.auth.uid == resource.data.d;
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+/* ref.css - reference-poster pages (Quran/adhkar/settings/chat/qibla). Loaded after navy.css. */
+body.dark{--card:#f8eecb;--tx:#1d3a2a;--cream:#f8eecb;--cream2:#efdfb0;--ink:#1d3a2a;--ink2:#4a5d3f;--gl:#c9a24a}
+/* cards: cream + double gold frame + dark-green text, everywhere */
+body.dark .z,body.dark .sr{background:linear-gradient(170deg,#fbf3d6,#f1e2b4);color:var(--ink);border:1px solid #c9a24a;border-right:1px solid #c9a24a;border-radius:18px;box-shadow:inset 0 0 0 3px #fbf3d6,inset 0 0 0 4px #c9a24a88,0 4px 12px #0007}
+body.dark .z,body.dark .z *:not(button):not(.chip):not(input):not(a):not(.leaflet-container *):not(h3):not(.hl){color:var(--ink)}
+body.dark .z .d,body.dark .z small,body.dark .z p,body.dark .sr .m{color:var(--ink2);opacity:1}
+body.dark .z h3{color:#0d5a3c;font-size:18px;display:flex;align-items:center;gap:8px}
+body.dark .z h3::before{content:"";width:14px;height:14px;background:#c9a24a;transform:rotate(45deg) scale(.75);flex:none;border-radius:2px}
+body.dark .z a{color:#0d5a3c;font-weight:700}
+body.dark .z .chip,body.dark .z .cnt button,body.dark .z .hero button{background:linear-gradient(170deg,#0f5a3c,#083a27);color:#f8eecb;border:1px solid #c9a24a;box-shadow:inset 0 0 0 2px #083a27,inset 0 0 0 3px #c9a24a66}
+body.dark .z .chip.on,body.dark .chip.on{background:linear-gradient(170deg,#ecc96e,#c9a24a);color:#1d3a2a;border-color:#8a6d2a;box-shadow:inset 0 0 0 2px #f6dd96,0 1px 4px #0005}
+body.dark .chip:not(.on){background:#f8eecb;color:#1d3a2a;border:1px solid #c9a24a}
+body.dark input.s,body.dark .z input.s{background:#fffaea;color:#1d3a2a;border:1px solid #c9a24a;border-radius:14px}
+body.dark input.s::placeholder{color:#7a7a58}
+body.dark label{color:var(--ink)}
+/* page title plaque + illustrated hero */
+.pghero{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:150px;margin:0 0 12px;padding:14px 10px 12px;border:1px solid #c9a24a;border-radius:26px 26px 18px 18px;overflow:hidden;background:radial-gradient(70% 90% at 50% 40%,#2c8a5d 0%,#0f5a3c 45%,#06301f 100%);box-shadow:inset 0 0 0 3px #06301f,inset 0 0 0 4px #c9a24a99,0 4px 12px #0007}
+.pghero::before,.pghero::after{content:"";position:absolute;top:0;bottom:0;width:70px;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 64 64'%3E%3Cpath d='M32 5l5.2 11.6L49 12l-4.6 11.8L56 32l-11.6 5.2L49 49l-11.8-4.6L32 56l-5.2-11.6L15 49l4.6-11.8L8 32l11.6-5.2L15 12l11.8 4.6z' fill='none' stroke='%23d9b45b' stroke-width='1.4'/%3E%3C/svg%3E") repeat-y center/50px}
+.pghero::before{right:0}.pghero::after{left:0}
+.pghero img{height:92px;width:auto;position:relative;z-index:1;filter:drop-shadow(0 4px 8px #000a) drop-shadow(0 0 18px #e3c26b66)}
+.pghero b{position:relative;z-index:1;color:#e9c76b;font-size:20px;margin-top:6px;text-shadow:0 2px 6px #000a}
+.pghero small{position:relative;z-index:1;color:#f0e6c8;font-size:12px}
+/* quran */
+body[data-pg=quran] .quick{background:linear-gradient(170deg,#fbf3d6,#f1e2b4)}
+body[data-pg=quran] .quick .symbol{color:#0d5a3c}
+body[data-pg=quran] .quick strong{color:#0d5a3c}
+body[data-pg=quran] .quick::after{content:"";display:block;position:absolute}
+body[data-pg=quran] .sr{min-height:62px;padding:10px 14px;margin-bottom:9px;border-radius:14px;box-shadow:inset 0 0 0 2px #fbf3d6,inset 0 0 0 3px #c9a24a77,0 3px 8px #0006}
+body[data-pg=quran] .sr .nm{color:#1d3a2a;font-size:21px}
+body[data-pg=quran] .sr .n{background:radial-gradient(circle at 35% 30%,#1c8a5a,#0a4a30);color:#f8eecb;border:2px solid #c9a24a;width:38px;height:38px;font-size:17px;box-shadow:0 0 0 2px #fbf3d6,0 0 0 3px #c9a24a88}
+body[data-pg=quran] .sr::before{content:"‹";color:#0d5a3c;font-size:24px;order:3;margin-inline-start:auto}
+body[data-pg=quran] .sr .m{order:2;margin-inline-start:auto;font-size:12px}
+body[data-pg=quran] .sr.pl{background:linear-gradient(170deg,#e3f3d0,#cfe6b4)}
+body[data-pg=quran] #ql{background:linear-gradient(180deg,#fbf3d6,#f3e6bb);border:1px solid #c9a24a;border-radius:22px;padding:12px 10px 4px;box-shadow:inset 0 0 0 3px #fbf3d6,inset 0 0 0 4px #c9a24a88,0 4px 12px #0007}
+body[data-pg=quran] #ql .sr{box-shadow:none;border:0;border-bottom:1px solid #c9a24a55;border-radius:0;background:transparent;margin:0}
+body[data-pg=quran] #ql .sr:last-child{border-bottom:0}
+/* adhkar tiles: cream arch tiles with illustrated icon */
+body[data-pg=adhkar] .tile{background:linear-gradient(170deg,#fbf3d6,#f1e2b4);color:#1d3a2a;border:1px solid #c9a24a;box-shadow:inset 0 0 0 3px #fbf3d6,inset 0 0 0 4px #c9a24a88,0 4px 10px #0007;min-height:130px}
+body[data-pg=adhkar] .tile .i{width:56px;height:46px;display:grid;place-items:center;font-size:0}
+body[data-pg=adhkar] .tile .i img{max-width:56px;max-height:46px;filter:drop-shadow(0 2px 3px #0005)}
+body[data-pg=adhkar] .tile small{color:#5a6b48}
+/* settings: row list */
+body[data-pg=settings] .z{padding:14px 16px}
+body[data-pg=settings] .z label{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #c9a24a55;font-weight:600}
+body[data-pg=settings] input[type=checkbox]{width:22px;height:22px;accent-color:#0d5a3c}
+body[data-pg=settings] input[type=range]{accent-color:#0d5a3c;width:100%}
+.setfoot{margin:6px 0 10px;border:1px solid #c9a24a;border-radius:20px;overflow:hidden;position:relative;height:130px;background:url(assets/palm.webp) left 12px bottom -6px/auto 120px no-repeat,url(assets/skyline.webp) right 12px bottom 0/auto 100px no-repeat,radial-gradient(80% 120% at 50% 100%,#1f8a5c,#06301f);box-shadow:inset 0 0 0 3px #06301f,inset 0 0 0 4px #c9a24a99}
+.setfoot span{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);padding:5px 20px;border:1px solid #c9a24a;border-radius:20px;background:#06301fe0;color:#e9c76b;font-size:15px;white-space:nowrap}
+/* chat */
+body[data-pg=chat] .chips{display:flex;gap:8px}
+body[data-pg=chat] #ctD,body[data-pg=chat] #ctG{flex:1;min-height:44px;border-radius:14px}
+body[data-pg=chat] .z{padding:14px}
+body[data-pg=chat] .z .chip#myInv{background:#fffaea;color:#1d3a2a;font-family:monospace;letter-spacing:1px}
+.chatdeco{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 12px;padding:10px;border:1px solid #c9a24a;border-radius:18px;background:radial-gradient(80% 120% at 50% 0,#1c7a52,#07331f);box-shadow:inset 0 0 0 3px #06301f,inset 0 0 0 4px #c9a24a88}
+.chatdeco img{height:54px}.chatdeco b{color:#e9c76b;font-size:18px}
+/* qibla compass */
+body[data-pg=qibla] main>.z:first-child{border-radius:60px 60px 22px 22px/46px 46px 22px 22px;background:radial-gradient(90% 140% at 50% 0,#1b7d53,#07331f);color:#f8eecb;text-align:center;border:1px solid #e0bc62;box-shadow:inset 0 0 0 3px #06301f,inset 0 0 0 4px #c9a24a,0 4px 12px #0007;order:-1;margin-top:0}
+body[data-pg=qibla] main>.z:first-child *{color:#f8eecb!important}
+body[data-pg=qibla] main>.z:first-child b{color:#e9c76b!important;font-size:19px}
+body[data-pg=qibla] #dial{border-radius:50%;background:radial-gradient(circle,#0d5a3c 0 22%,transparent 23%),repeating-conic-gradient(from -.5deg,#e3c26b 0 1deg,transparent 1deg 6deg),radial-gradient(circle,#0a4a30 0 60%,#06301f 61%)}
+body[data-pg=qibla] #dial::before{content:"";position:absolute;inset:26px;border-radius:50%;background:radial-gradient(circle,#124f37,#082d1e);border:2px solid #c9a24a}
+body[data-pg=qibla] #dial>div:first-child{color:#e9c76b!important;z-index:2;background:#06301f;padding:1px 12px;border-radius:12px;border:1px solid #c9a24a;top:-6px!important}
+.kaabaC{position:absolute;left:50%;top:50%;width:84px;transform:translate(-50%,-48%);z-index:1;filter:drop-shadow(0 3px 8px #000b)}
+body[data-pg=qibla] #needle{z-index:3}
+body[data-pg=qibla] .z .cnt button{min-height:46px}
+.cardinal{position:absolute;color:#f8eecb;font-weight:700;font-size:15px;z-index:2}
+
+body[data-pg=qibla] #app{display:flex;flex-direction:column}
+body[data-pg=qibla] .compassW{order:-2;margin:6px auto 16px!important;flex:none}
+body[data-pg=qibla] #qs{order:-1;color:#f0e6c8}
+/* dark-variant cards that were authored with light inline text */
+body.dark .z.pdate,body.dark .z.verse-card,body.dark .z.rank-card{background:radial-gradient(90% 140% at 50% 0,#1b7d53,#07331f);border:1px solid #e0bc62;box-shadow:inset 0 0 0 3px #06301f,inset 0 0 0 4px #c9a24a,0 4px 12px #0007}
+body.dark .z.pdate .d,body.dark .z.verse-card .d{color:#f3e3b0!important}
+body.dark .z.pdate b,body.dark .z.verse-card b{color:#e9c76b}
+body.dark .z.verse-card .t{color:#f6efdd}
+body.dark .z.verse-card .panel-title a{color:#e3c26b}
+body.dark .z.pdate .chip{background:#f8eecb;color:#1d3a2a;border-color:#c9a24a;box-shadow:none}
+body.dark .z.verse-card .chip.on{background:linear-gradient(170deg,#ecc96e,#c9a24a);color:#1d3a2a}
+
+body.dark .z.verse-card *:not(button):not(.chip):not(a){color:#f6efdd!important}
+body.dark .z.verse-card b,body.dark .z.verse-card .d b{color:#e9c76b!important}
+body.dark .z.verse-card .d{color:#f3e3b0!important}
+body.dark .tile.imgt{background:transparent;border:0;box-shadow:none;padding:0}
+.prow .pico{width:36px;height:30px;vertical-align:middle;margin-inline-end:4px}
+.prow.pnext .pico{background:#f6ecca;border-radius:8px;padding:2px}
+/* surah reader: cream mushaf page with dark-green text */
+body.dark .ay{background:linear-gradient(180deg,#fbf3d6,#f3e6bb);color:#1d3a2a;border:1px solid #c9a24a;box-shadow:inset 0 0 0 3px #fbf3d6,inset 0 0 0 4px #c9a24a88,0 4px 12px #0007}
+body.dark .ay b{color:#0d5a3c}
+body.dark .ay .ayh.on{background:#c9a24a55;box-shadow:0 0 0 1px #c9a24a}
+body.dark .bis{color:#e9c76b}
+/* tasbih / counter screens */
+body.dark select{background:#fffaea;color:#1d3a2a;border:1px solid #c9a24a;border-radius:12px}
+body[data-pg=tasbih] main button:not(.chip){background:linear-gradient(170deg,#ecc96e,#c9a24a);color:#1d3a2a;border:1px solid #8a6d2a;border-radius:14px;min-height:42px;opacity:1}
+/* compass cardinals */
+.cardinal{position:absolute;color:#f8eecb;font-weight:700;font-size:16px;z-index:2;text-shadow:0 1px 3px #000}
